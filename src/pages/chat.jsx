@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { blue } from "@mui/material/colors";
-import "dotenv/config";
 
 function ChatPage() {
     const sysPrompt = `Welcome to the job interview assistant! I will guide you through 10 simple questions to create your resume. Answer each question with short, precise information. What is your name?`;
 
-    const [token] = useState(process.env.REACT_APP_HF_TOKEN);
+    const [token] = useState(import.meta.env.VITE_HF_TOKEN);
+
     const [text, setText] = useState("");
     const [messages, setMessages] = useState([
         { role: "system", content: sysPrompt },
