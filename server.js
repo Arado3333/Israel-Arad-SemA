@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import { User } from "./models/User.model.js";
+import { Resume } from "./models/Resume.model.js";
+import { sourceMapsEnabled } from "process";
 
 const app = express();
 const port = process.env.SERVER_PORT || 5001;
@@ -12,61 +14,68 @@ app.use(express.json()); // מאפשר קריאת JSON בבקשות
 // Endpoint לשמירת נתונים לתוך JSON בלי למחוק את הישנים
 app.post("/save-resume", async (req, res) => {
     const resumeData = req.body;
+    let existingData;
+    try {
+        existingData = await fs.readFile("resumeData.json", "utf8");
+    } catch (err) {
+        existingData = [];
+    }
 
-    console.log(resumeData);
+    existingData = JSON.parse(existingData);
 
-    // קריאת הנתונים הקיימים (אם יש)
-    await fs.readFile("resumeData.json", "utf8", (err, data) => {
-        let existingData = [];
+    //decounstructing the resume object
+    const {
+        fullName,
+        currentRole,
+        skills,
+        education,
+        teamExperience,
+        achievements,
+        careerGoals,
+        hobbies,
+        location,
+    } = resumeData;
 
-        if (!err && data) {
-            try {
-                existingData = JSON.parse(data);
-            } catch (parseErr) {
-                console.error("Error parsing JSON:", parseErr);
-            }
-        }
+    //assemble the resume object - according to the model
+    const newResume = new Resume(
+        fullName,
+        currentRole,
+        skills,
+        education,
+        teamExperience,
+        achievements,
+        careerGoals,
+        hobbies,
+        location
+    );
+    existingData.push(newResume);
 
-        // הוספת הנתונים החדשים
-        existingData.push(resumeData);
-
-        // שמירת הנתונים המעודכנים
-        fs.writeFile(
-            "resumeData.json",
-            JSON.stringify(existingData, null, 2),
-            (err) => {
-                if (err) {
-                    return res
-                        .status(500)
-                        .json({ message: "Error saving data", error: err });
-                }
-                res.status(200).json({
-                    message: "Resume data saved successfully",
-                });
-            }
-        );
-    });
+    //כתיבה לתוך - resumeData.json
+    await fs.writeFile(
+        "resumeData.json",
+        JSON.stringify(existingData, null, 2),
+        "utf8"
+    );
 });
 
 // Endpoint לשליפת הנתונים מהקובץ
 app.get("/get-resume", async (req, res) => {
-    await fs.readFile("resumeData.json", "utf8", (err, data) => {
-        if (err) {
-            return res
-                .status(500)
-                .json({ message: "Error reading data", error: err });
-        }
+    let resumes;
+    try {
+        resumes = await fs.readFile("resumeData.json", "utf8");
+        resumes = JSON.parse(resumes);
+        res.status(200).json({
+            message: "Resumes found",
+            resumes,
+            success: true,
+        });
+    } catch {
+        res.status(404).json({ message: "No resumes found", success: false });
+    }
 
-        try {
-            const parsedData = JSON.parse(data);
-            res.status(200).json(parsedData);
-        } catch (parseErr) {
-            res.status(500).json({
-                message: "Error parsing JSON data",
-                error: parseErr,
-            });
-        }
-    });
+    if (resumes !== null) {
+        JSON.parse(resumes);
+    }
 });
 
 app.post("/users/register", async (req, res) => {

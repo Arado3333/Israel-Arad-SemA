@@ -90,19 +90,16 @@ function ChatPage() {
         }
     };
 
-    const endConversation = () => {
-        console.log("Resume data:", resumeData);    
-        
-        fetch("http://localhost:5001/save-resume", {
+    const endConversation = async () => {
+        console.log("Resume data:", resumeData);
+
+        await fetch("http://localhost:5001/save-resume", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(resumeData),
         })
             .then((response) => response.json())
-            .then(alert("Resume data has been saved successfully!"))
-            .catch((error) =>
-                console.error("Error saving resume data:", error)
-            );
+            .then(alert("Resume data has been saved successfully!"));
     };
 
     return (
