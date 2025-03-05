@@ -91,13 +91,15 @@ function ChatPage() {
     };
 
     const endConversation = () => {
-        fetch("http://localhost:5000/save-resume", {
+        console.log("Resume data:", resumeData);    
+        
+        fetch("http://localhost:5001/save-resume", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(resumeData),
         })
             .then((response) => response.json())
-            .then((data) => alert("Resume data has been saved successfully!"))
+            .then(alert("Resume data has been saved successfully!"))
             .catch((error) =>
                 console.error("Error saving resume data:", error)
             );

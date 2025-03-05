@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import { User } from "./models/User.model.js";
 
 const app = express();
-const port = 5001;
+const port = process.env.SERVER_PORT || 5001;
 
 app.use(cors());
 app.use(express.json()); // מאפשר קריאת JSON בבקשות
@@ -12,6 +12,8 @@ app.use(express.json()); // מאפשר קריאת JSON בבקשות
 // Endpoint לשמירת נתונים לתוך JSON בלי למחוק את הישנים
 app.post("/save-resume", async (req, res) => {
     const resumeData = req.body;
+
+    console.log(resumeData);
 
     // קריאת הנתונים הקיימים (אם יש)
     await fs.readFile("resumeData.json", "utf8", (err, data) => {
@@ -23,11 +25,6 @@ app.post("/save-resume", async (req, res) => {
             } catch (parseErr) {
                 console.error("Error parsing JSON:", parseErr);
             }
-        }
-
-        // מוודא שהנתונים הם מערך
-        if (!Array.isArray(existingData)) {
-            existingData = [];
         }
 
         // הוספת הנתונים החדשים
