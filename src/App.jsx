@@ -24,7 +24,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
 
                 {/* נתיבים תחת הלייאאוט */}
-                <Route path="/" element={<DashboardLayout />}>
+                <Route path="/" element={<DashboardLayout /> }>
                     <Route path="home" element={<Home />} />
                     <Route path="map" element={<Map />} />
                     <Route path="chat" element={<Chat />} />

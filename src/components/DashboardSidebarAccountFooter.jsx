@@ -44,7 +44,7 @@ const NAVIGATION = [
     },
     {
         segment: "map",
-        title: "Map",
+        title: "CV Preview",
     },
     {
         segment: "chat",
